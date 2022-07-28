@@ -1,26 +1,26 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState, useEffect, startTransition } from 'react'
 import "./App.css"
 
-const getLocalItem=()=>{
- let list = localStorage.getItem("localtask");
- if(list){
-  return JSON.parse(list);
- }
- else{
-  return [];
- }
+const getLocalItem = () => {
+  let list = localStorage.getItem("localtask");
+  if (list) {
+    return JSON.parse(list);
+  }
+  else {
+    return [];
+  }
 }
 
 
 export default function App() {
   const [text, setText] = useState("");
-  const [button,setButton] = useState("ADD");
+  const [isEditing, setIsEditing] = useState(false);
 
   const [task, setTask] = useState(getLocalItem);
 
-  useEffect( ()=>{
-    localStorage.setItem("localtask",JSON.stringify(task));
-   },[task])
+  useEffect(() => {
+    localStorage.setItem("localtask", JSON.stringify(task));
+  }, [task])
   const handleSubmit = (e) => {
     e.preventDefault();
     setTask([...task, text]);
@@ -32,14 +32,19 @@ export default function App() {
     setText(e.target.value);
   }
   const editTask = (taskIndex) => {
-setButton("Save");
-   };
+    setIsEditing(true);
+    
+  };
   const deleteTask = (passedIndex) => {
     const finalData = task.filter((currentElement, index) => {
       return index !== passedIndex;
     })
     setTask(finalData);
   };
+
+  const handleSaveBtn=()=>{
+    setIsEditing(false);
+  }
 
 
   return (
@@ -51,9 +56,10 @@ setButton("Save");
           <input type="text" placeholder='Enter Task...'
             onChange={changeText}
             value={text} />
-          <button type='submit' disabled={!text}>
-            ADD 
-          </button>
+          {isEditing ? <button type='text'onClick={handleSaveBtn}>SAVE</button> :
+          <button type='submit' >ADD</button> }
+
+
         </div>
       </form>
 
